@@ -10,4 +10,4 @@
 <h2> second project submitted by SSS .. :)  </h2>
 <h2> This is amazing....!!! </h2>
 <h1> WWWOOOOWWWWWWWWWWWWWWWW </h1>
-<h1> WWWOOOOWWWWWWWW </h1>
+<h1> super star born </h1>
