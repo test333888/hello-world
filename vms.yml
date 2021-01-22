@@ -1,0 +1,63 @@
+- name: To create VMs
+  hosts: localhost
+  gather_facts: false
+  tasks:
+         
+          - name: Create Vnet
+            azure_rm_virtualnetwork:
+                    resource_group: Testing
+                    name: "{{ item }}"
+                    address_prefixes: "10.10.0.0/16"
+            loop:
+                    - vn002
+                    - vn003
+                    - vn004        
+          - name: Add Subnet
+            azure_rm_subnet:
+                    resource_group: Testing
+                    name: "{{ item.subnet }}"
+                    address_prefix: "10.10.0.0/24"
+                    virtual_network: "{{ item.vn }}"
+            loop:
+                    - { subnet: 'subnet002', vn: 'vn002'}
+                    - { subnet: 'subnet003', vn: 'vn003'}
+                    - { subnet: 'subnet004', vn: 'vn004'}
+          - name: Create public ip
+            azure_rm_publicipaddress:
+                    resource_group: Testing
+                    allocation_method: Static
+                    name: "{{ item }}"
+            loop:
+                    - publicip002
+                    - publicip003
+                    - publicip004
+          - name: Create NIC
+            azure_rm_networkinterface:
+                    resource_group: Testing
+                    name: "{{ item.nic }}"
+                    virtual_network: "{{ item.vn }}"
+                    subnet: "{{ item.subnet }}"
+                    public_ip_name: "{{ item.publicip }}"
+            loop:
+                    - { nic: 'nic002' , vn: 'vn002' , subnet: 'subnet002', publicip: 'publicip002' }
+                    - { nic: 'nic003' , vn: 'vn003' , subnet: 'subnet003', publicip: 'publicip003' } 
+                    - { nic: 'nic004' , vn: 'vn004' , subnet: 'subnet004', publicip: 'publicip004' }
+          - name: Create Virtual Machine
+            azure_rm_virtualmachine:
+                    resource_group: Testing
+                    name: "{{ item.vm }}"
+                    vm_size: Standard_B1ms
+                    admin_username: adminn
+                    admin_password: Start#123
+                    network_interfaces: "{{ item.nic }}"
+                    image:
+                             offer: UbuntuServer
+                             publisher: Canonical
+                             sku: '18.04-LTS'
+                             version: latest
+            loop:
+                    - { vm: 'vm002' , nic: 'nic002'}
+                    - { vm: 'vm003' , nic: 'nic003'}
+                    - { vm: 'vm004' , nic: 'nic004'}
+
+
